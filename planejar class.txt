@@ -1,0 +1,21 @@
+Extrato:
+    Nome string
+    Cliente string
+    Conta int(extrato_activ["D3"].value[:6])
+    Max_row
+
+    Inserir apartir Fazer função pra achar linha apartir de trnasção linha[0].row + 2
+
+Cliente:
+    Nome string
+    Conta int
+    Codinome string
+    Coordenada string
+    Row int
+
+Dados:
+    ultima linha int ou linha. ta linha mas acho q n vai da pra fazer em classe
+    Cliente String
+    Conta int
+    Max_row
+    Inserir apartir
