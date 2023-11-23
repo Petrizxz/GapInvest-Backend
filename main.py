@@ -10,6 +10,7 @@ from flask_cors import CORS, cross_origin
 from Controller import Planilha
 
 UPLOAD_FOLDER = 'folder'
+# Caso os extratos tiver outro formato de excel é so adicionar aqui
 ALLOWED_EXTENSIONS = set(['xlsx'])
 
 app = Flask(__name__)
