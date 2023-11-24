@@ -1,5 +1,9 @@
 RANGE_NAME = 'Dados Activ!A2:S'
 
+RANGE_DOLAR = 'B3 Histórico!I22:24'
+
+RANGE_B3 = 'B3 Histórico!I17:20'
+
 
 class Dados:
     def __init__(self, sheet, sheet_id, conta):
@@ -25,3 +29,31 @@ class Dados:
             print(numero)
             print(self.tab[numero][6])
             return self.tab[numero]
+
+    @staticmethod
+    def get_dolar(sheet, sheet_id):
+        try:
+            dados = sheet.values().get(spreadsheetId=sheet_id, range=RANGE_DOLAR).execute()
+            dados = dados['values']
+            dados = {
+                "tab": dados,
+                "insert_row": ''
+            }
+        except ValueError as erro:
+            raise ValueError(f"Não foi possível buscar os dados da planilha clientes. Erro: {erro}")
+        else:
+            return dados
+
+    @staticmethod
+    def get_b3(sheet, sheet_id):
+        try:
+            dados = sheet.values().get(spreadsheetId=sheet_id, range=RANGE_B3).execute()
+            dados = dados['values']
+            dados = {
+                "tab": dados,
+                "insert_row": ''
+            }
+        except ValueError as erro:
+            raise ValueError(f"Não foi possível buscar os dados da planilha clientes. Erro: {erro}")
+        else:
+            return dados

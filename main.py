@@ -3,7 +3,7 @@ from __future__ import print_function
 import os
 
 from flask import Flask, request, jsonify, make_response
-from flask_restful import Resource, Api
+from flask_restful import Resource
 from werkzeug.utils import secure_filename
 from flask_cors import CORS, cross_origin
 
@@ -15,10 +15,11 @@ ALLOWED_EXTENSIONS = set(['xlsx'])
 
 app = Flask(__name__)
 CORS(app)
-api = Api(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['folder'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
+
 # TODO: fazer isso caso precise Aqui estão as funções para cadastrar o extrato da Xp(Estão incompleto)
 # No finalzinho da logica, tem que olhar o fato de comparar todas as datas iguais
 # Exemplo: 15/09 apareceu 4 vezes no extrato porem na planilha so tem 2, tem q fazer uma logica pra conferir isso
@@ -133,37 +134,113 @@ def allowed_file(filename):
         filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-class UploadFiles(Resource):
-    def post(self):
-        # Se não enviar um arquivo
-        if 'file' not in request.files:
-            return make_response(jsonify({"message": "Arquivo obrigatório!"}), 500)
+@app.route('/', methods=['POST'])
+def upload():
+    # Se não enviar um arquivo
+    if 'file' not in request.files:
+        return make_response(jsonify({"message": "Arquivo obrigatório!"}), 500)
 
-        file = request.files['file']  # confere extensão
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['folder'], filename))
+    file = request.files['file']  # confere extensão
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['folder'], filename))
 
-            print(f"Arquivo {filename} recebido com sucesso!")
-            print(f"Arquivo salvo no caminho: .{os.path.join(app.config['folder'], filename)}")
+        print(f"Arquivo {filename} recebido com sucesso!")
+        print(f"Arquivo salvo no caminho: .{os.path.join(app.config['folder'], filename)}")
 
-            try:
-                Planilha.cadastrar_activ(filename)
-            except ValueError as erro:
-                print('vai remover arquivo')
-                os.remove(f'./folder/{filename}')
-                print('arquivo removido com sucesso!')
-                return make_response(jsonify({"message": f"{erro}"}), 400)
-            else:
-                os.remove(f'./folder/{filename}')
-                return make_response(jsonify({"message": "Upload realizado com sucesso!"}), 200)
+        try:
+            Planilha.cadastrar_activ(filename)
+        except ValueError as erro:
+            print('vai remover arquivo')
+            os.remove(f'./folder/{filename}')
+            print('arquivo removido com sucesso!')
+            return make_response(jsonify({"message": f"{erro}"}), 400)
+        else:
+            os.remove(f'./folder/{filename}')
+            return make_response(jsonify({"message": "Upload realizado com sucesso!"}), 200)
+
+#################################################################  POST  ######################################################
 
 
-api.add_resource(UploadFiles, '/')
-# api.add_resource(UserById, '/users/<id>')
+@app.route('/planilha', methods=['POST'])
+def post_cliente():
+    try:
+        Planilha.cadastrar_cliente(request.values)
+    except ValueError as erro:
+        return make_response(jsonify({"message": f"{erro}"}), 400)
+    else:
+        return make_response(jsonify({"message": "Upload realizado com sucesso!"}), 200)
+
+
+@app.route('/dolar', methods=['POST'])
+def post_dolar():
+    try:
+        Planilha.cadastrar_dolar(request.values)
+    except ValueError as erro:
+        return make_response(jsonify({"message": f"{erro}"}), 400)
+    else:
+        return make_response(jsonify({"message": "Upload realizado com sucesso!"}), 200)
+
+
+@app.route('/b3', methods=['POST'])
+def post_b3():
+    try:
+        Planilha.cadastrar_b3(request.values)
+    except ValueError as erro:
+
+        return make_response(jsonify({"message": f"{erro}"}), 400)
+    else:
+        return make_response(jsonify({"message": "Upload realizado com sucesso!"}), 200)
+
+
+@app.route('/dados-cliente', methods=['POST'])
+def post_dados_cliente():
+    try:
+        Planilha.cadastrar_dados_cliente(request.values)
+    except ValueError as erro:
+        return make_response(jsonify({"message": f"{erro}"}), 400)
+    else:
+        return make_response(jsonify({"message": "Upload realizado com sucesso!"}), 200)
+
+
+@app.route('/operacional', methods=['POST'])
+def post_operacional():
+    try:
+        Planilha.cadastrar_operacional(request.values)
+    except ValueError as erro:
+        return make_response(jsonify({"message": f"{erro}"}), 400)
+    else:
+        return make_response(jsonify({"message": "Upload realizado com sucesso!"}), 200)
+
+#################################################################  GET  ######################################################
+
+
+@app.route('/planilha', methods=['GET'])
+def get_cliente():  # TODO TALVEZ ISSO DE ERRO POR TER O MSM NOME DA FUNÇÂO
+    try:
+        dados = Planilha.get_cliente(request.values)
+    except ValueError as erro:
+
+        return make_response(jsonify({"message": f"{erro}"}), 400)
+    else:
+        # TODO TAlvez esse 0 possa mudar caso mude a planilha clientes
+        codinomes = []
+        for linha in dados['tab']:
+            codinomes.append(linha[0])
+
+        dados = {
+            "Codinome": codinomes,
+            "coordenadas": dados['coordenadas']
+        }
+        return jsonify(dados)
+
 
 if __name__ == '__main__':
     # Planilha.cadastrar_activ(f"lion.xlsx")
-    app.run(host="0.0.0.0", port=5000, debug=True)
-
-
+    # app.run(host="0.0.0.0", port=5000, debug=True)
+    # Planilha.cadastrar_cliente(f"lion.xlsx")
+    # Planilha.cadastrar_dolar(f"lion.xlsx")
+    # Planilha.cadastrar_b3(f"lion.xlsx")
+    # Planilha.get_cliente(f"lion.xlsx")
+    # Planilha.cadastrar_dados_cliente(f"lion.xlsx")
+    Planilha.cadastrar_operacional(f"lion.xlsx")
