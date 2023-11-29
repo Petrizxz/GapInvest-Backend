@@ -1,17 +1,13 @@
-from openpyxl.reader.excel import load_workbook
-
-RANGE_NAME = 'Clientes!A2:E'
-
-RANGE_DADOS = 'Clientes!H2:S'
+from uteis.constantes.const import C
 
 
 def _verificar_cliente_activ(conta, clientes):
     dic = None
     for i in range(len(clientes)):
         if clientes[i][4] == conta:
-            dic = {"Nome": clientes[i][0], "Corretora": clientes[i][1], "Estrategia": clientes[i][2],
-                   "Bolsa": clientes[i][3], "Conta": clientes[i][4], "Codinome": clientes[i][5],
-                   "Coordenada": 'E' + str(i + 2), "Row": str(i + 2)}  # TODO  isso pode dar errado
+            dic = {"Codinome": clientes[i][0], "Corretora": clientes[i][1], "Estrategia": clientes[i][2],
+                   "Bolsa": clientes[i][3], "Conta": clientes[i][4],
+                   "Coordenada": 'E' + str(i + 2), "Row": str(i + 2)}
             break
     return dic
 
@@ -19,18 +15,21 @@ def _verificar_cliente_activ(conta, clientes):
 class Cliente:
     def __init__(self, sheet, sheet_id, conta):
         try:
-            dadosclientes = sheet.values().get(spreadsheetId=sheet_id, range=RANGE_NAME).execute()
+            dados_clientes = sheet.values().get(spreadsheetId=sheet_id, range=C.RANGE_CLIENTE()).execute()
 
-            dadosclientes = dadosclientes['values']
-            dic = _verificar_cliente_activ(conta, dadosclientes)
+            dados_clientes = dados_clientes['values']
+            for i in dados_clientes:
+                print(i)
+                for j in i:
+                    print(j)
+            dic = _verificar_cliente_activ(conta, dados_clientes)
             if dic is None:
                 raise ValueError(f"A conta {conta} não foi encontrada na tabela de clientes. Cadastre o cliente na "
                                  f"aba Clientes da planilha")
         except ValueError as erro:
             raise erro
         else:
-            self.tab = dadosclientes
-            self.nome = dic["Nome"]
+            self.tab = dados_clientes
             self.conta = dic["Conta"]
             self.codinome = dic["Codinome"]
             self.row = dic["Row"]
@@ -40,7 +39,7 @@ class Cliente:
     def get_clientes(sheet, sheet_id):
         alfabeto = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
         try:
-            dados_clientes = sheet.values().get(spreadsheetId=sheet_id, range=RANGE_NAME).execute()
+            dados_clientes = sheet.values().get(spreadsheetId=sheet_id, range=C.RANGE_CLIENTE()).execute()
             dados_clientes = dados_clientes['values']
             # TODO DEPOIS FAZER UMA LOGICA PARA deixar isso em todas os outros q tem q buscar dados, tem um site no whatsapp que mostra como gerar list de A ate ZZZ
             coordenadas = []
@@ -55,7 +54,7 @@ class Cliente:
                 "insert_row": str(len(dados_clientes) + 2)
             }
         except ValueError as erro:
-            raise ValueError(f"Não foi possível buscar os dados da planilha clientes. Erro: {erro}")
+            raise ValueError(f"Não foi possível buscar os clientes cadastrados na planilha. Erro: {erro}")
         else:
             return dados_clientes
 
@@ -64,7 +63,7 @@ class Cliente:
         alfabeto = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
                     'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
         try:
-            dados_clientes = sheet.values().get(spreadsheetId=sheet_id, range=RANGE_DADOS).execute()
+            dados_clientes = sheet.values().get(spreadsheetId=sheet_id, range=C.RANGE_DADOS_CLIENTES()).execute()
             dados_clientes = dados_clientes['values']
             # TODO DEPOIS FAZER UMA LOGICA PARA deixar isso em todas os outros q tem q buscar dados, tem um site no whatsapp que mostra como gerar list de A ate ZZZ
             coordenadas = []
@@ -79,7 +78,7 @@ class Cliente:
                 "insert_row": str(len(dados_clientes) + 2)
             }
         except ValueError as erro:
-            raise ValueError(f"Não foi possível buscar os dados da planilha clientes. Erro: {erro}")
+            raise ValueError(f"Não foi possível buscar os dados dos clientes da planilha. Erro: {erro}")
         else:
             return dados_clientes
 

@@ -3,33 +3,30 @@ from __future__ import print_function
 import os
 
 from flask import Flask, request, jsonify, make_response
-from flask_restful import Resource
 from werkzeug.utils import secure_filename
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
+
+from uteis.constantes.const import C
 
 from Controller import Planilha
-
-UPLOAD_FOLDER = 'folder'
-# Caso os extratos tiver outro formato de excel é so adicionar aqui
-ALLOWED_EXTENSIONS = set(['xlsx'])
 
 app = Flask(__name__)
 CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
-app.config['folder'] = UPLOAD_FOLDER
+app.config['folder'] = C.UPLOAD_FOLDER()
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 
 # TODO: fazer isso caso precise Aqui estão as funções para cadastrar o extrato da Xp(Estão incompleto)
 # No finalzinho da logica, tem que olhar o fato de comparar todas as datas iguais
 # Exemplo: 15/09 apareceu 4 vezes no extrato porem na planilha so tem 2, tem q fazer uma logica pra conferir isso
-# da maneira que esta agr msm se falta ele vai var se a data é > que a da planilha, se for começa a inserir apartir
+# da maneira que esta agr msm se falta ele vai var se a data é > que a da planilha, se for começa a inserir a partir
 # do dia 16/09 sem conferir se ficou algo para trás
 # Nome do extrato
 # Intervalo dos dados de result
 # Nome das páginas
 # Posição da conta
-# planilha = load_workbook("Novo Resultado Robos ONLINE.xlsx", data_only=True)
+# planilha = load_workbook("Novo Resultado Robôs ONLINE.xlsx", data_only=True)
 
 
 # def verificar_cliente(extrato_xp, clientes):
@@ -75,23 +72,23 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 #             # print(tabela)
 #             print(linha[0].row - 2)
 #             return linha[0].row - 2
-#         return "Deu ruiom"
+#         return "Deu ruim"
 #
 #
-# def ultima_linha_dadosxp(dadosxp, cliente):
+# def ultima_linha_dados_xp(dados_xp, cliente):
 #     numero = 0
-#     for celula in dadosxp["E"]:
+#     for celula in dados_xp["E"]:
 #
 #         if celula.value == cliente["Conta"]:
-#             # data = dadosxp[f"G{celula.row}"]
+#             # data = dados_xp[f"G{celula.row}"]
 #             numero = celula.row
 #
 #     if numero == 0:
 #         return 0
 #     else:
 #         print(numero)
-#         return dadosxp[f"F{numero}:K{numero}"]
-# def get_tabelacliente(dados, cliente):
+#         return dados_xp[f"F{numero}:K{numero}"]
+# def get_tabela_cliente(dados, cliente):
 #     tabela = []
 #     for celula in dados["E"]:
 #         inserir = []
@@ -129,9 +126,9 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 def allowed_file(filename):
     # '.' in file verifica se tem ponto no arquivo.
-    # Rsplit separa a extensão do nome deixa minusculo e compara se a estensão é valida no vetor ALLOWED_EXTENSIONS
+    # Rsplit separa a extensão do nome deixa minusculo e compara se a extensão é valida no vetor ALLOWED_EXTENSIONS
     return '.' in filename and \
-        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+        filename.rsplit('.', 1)[1].lower() in C.ALLOWED_EXTENSIONS()
 
 
 @app.route('/', methods=['POST'])
@@ -159,88 +156,88 @@ def upload():
             os.remove(f'./folder/{filename}')
             return make_response(jsonify({"message": "Upload realizado com sucesso!"}), 200)
 
+
 #################################################################  POST  ######################################################
 
 
 @app.route('/planilha', methods=['POST'])
 def post_cliente():
     try:
-        Planilha.cadastrar_cliente(request.values)
+        Planilha.cadastrar_cliente(request.json)
     except ValueError as erro:
         return make_response(jsonify({"message": f"{erro}"}), 400)
     else:
-        return make_response(jsonify({"message": "Upload realizado com sucesso!"}), 200)
+        return make_response(jsonify({"message": "Cliente cadastrado com sucesso!"}), 200)
 
 
 @app.route('/dolar', methods=['POST'])
 def post_dolar():
     try:
-        Planilha.cadastrar_dolar(request.values)
+        Planilha.cadastrar_dolar(request.json)
     except ValueError as erro:
         return make_response(jsonify({"message": f"{erro}"}), 400)
     else:
-        return make_response(jsonify({"message": "Upload realizado com sucesso!"}), 200)
+        return make_response(jsonify({"message": "Cotação atualizada com sucesso!"}), 200)
 
 
 @app.route('/b3', methods=['POST'])
 def post_b3():
     try:
-        Planilha.cadastrar_b3(request.values)
+        Planilha.cadastrar_b3(request.json)
     except ValueError as erro:
 
         return make_response(jsonify({"message": f"{erro}"}), 400)
     else:
-        return make_response(jsonify({"message": "Upload realizado com sucesso!"}), 200)
+        return make_response(jsonify({"message": "Cotação atualizada com sucesso!"}), 200)
 
 
 @app.route('/dados-cliente', methods=['POST'])
 def post_dados_cliente():
     try:
-        Planilha.cadastrar_dados_cliente(request.values)
+        Planilha.cadastrar_dados_cliente(request.json)
     except ValueError as erro:
         return make_response(jsonify({"message": f"{erro}"}), 400)
     else:
-        return make_response(jsonify({"message": "Upload realizado com sucesso!"}), 200)
+        return make_response(jsonify({"message": "Dados atualizados com sucesso!"}), 200)
 
 
 @app.route('/operacional', methods=['POST'])
 def post_operacional():
     try:
-        Planilha.cadastrar_operacional(request.values)
+        Planilha.cadastrar_operacional(request.json)
     except ValueError as erro:
         return make_response(jsonify({"message": f"{erro}"}), 400)
     else:
-        return make_response(jsonify({"message": "Upload realizado com sucesso!"}), 200)
+        return make_response(jsonify({"message": "Planilha atualizada com sucesso!"}), 200)
+
 
 #################################################################  GET  ######################################################
 
 
 @app.route('/planilha', methods=['GET'])
-def get_cliente():  # TODO TALVEZ ISSO DE ERRO POR TER O MSM NOME DA FUNÇÂO
+def get_cliente():
     try:
-        dados = Planilha.get_cliente(request.values)
+        dados = Planilha.get_cliente()
     except ValueError as erro:
-
         return make_response(jsonify({"message": f"{erro}"}), 400)
     else:
-        # TODO TAlvez esse 0 possa mudar caso mude a planilha clientes
-        codinomes = []
-        for linha in dados['tab']:
-            codinomes.append(linha[0])
+        # TODO Talvez esse 0 possa mudar caso mude a planilha clientes TALVEZ ISSO N FUNCIONE TEM Q TESTAR COM O POSTMAN
+        clientes = []
+        for i, linha in enumerate(dados['tab']):
+            vet = {"Codinome": linha[0], "Coordenadas": dados['coordenadas'][i]}
+            clientes.append(vet)
 
-        dados = {
-            "Codinome": codinomes,
-            "coordenadas": dados['coordenadas']
-        }
-        return jsonify(dados)
+        # TODO TALVEZ NÂO SEJA ASSIM Q RETORNA JSON
+        return jsonify(clientes)
 
 
 if __name__ == '__main__':
     # Planilha.cadastrar_activ(f"lion.xlsx")
-    # app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
     # Planilha.cadastrar_cliente(f"lion.xlsx")
     # Planilha.cadastrar_dolar(f"lion.xlsx")
     # Planilha.cadastrar_b3(f"lion.xlsx")
     # Planilha.get_cliente(f"lion.xlsx")
     # Planilha.cadastrar_dados_cliente(f"lion.xlsx")
-    Planilha.cadastrar_operacional(f"lion.xlsx")
+    # Planilha.cadastrar_operacional(f"lion.xlsx")
+    # get_cliente()

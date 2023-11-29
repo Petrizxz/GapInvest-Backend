@@ -1,13 +1,8 @@
-RANGE_NAME = 'Dados Activ!A2:S'
-
-RANGE_DOLAR = 'B3 Histórico!I22:24'
-
-RANGE_B3 = 'B3 Histórico!I17:20'
-
+from uteis.constantes.const import C
 
 class Dados:
     def __init__(self, sheet, sheet_id, conta):
-        dados = sheet.values().get(spreadsheetId=sheet_id, range=RANGE_NAME).execute()
+        dados = sheet.values().get(spreadsheetId=sheet_id, range=C.RANGE_NAME()).execute()
         self.tab = dados['values']
         # _formatar_tab(dados)
         self.ultlinha = self._procurar_ultima_linha_dadosactiv(conta)
@@ -21,7 +16,7 @@ class Dados:
                 if self.tab[i][4] == conta:
                     numero = i
             except Exception as err:
-                print(err) #TODO Aqui é onde acha o erro caso tenha alguma linha em branco
+                print(err)  # TODO Aqui é onde acha o erro caso tenha alguma linha em branco
 
         if numero == 0:
             return "Cadastrar"
@@ -33,7 +28,7 @@ class Dados:
     @staticmethod
     def get_dolar(sheet, sheet_id):
         try:
-            dados = sheet.values().get(spreadsheetId=sheet_id, range=RANGE_DOLAR).execute()
+            dados = sheet.values().get(spreadsheetId=sheet_id, range=C.RANGE_DOLAR()).execute()
             dados = dados['values']
             dados = {
                 "tab": dados,
@@ -47,7 +42,7 @@ class Dados:
     @staticmethod
     def get_b3(sheet, sheet_id):
         try:
-            dados = sheet.values().get(spreadsheetId=sheet_id, range=RANGE_B3).execute()
+            dados = sheet.values().get(spreadsheetId=sheet_id, range=C.RANGE_B3()).execute()
             dados = dados['values']
             dados = {
                 "tab": dados,
