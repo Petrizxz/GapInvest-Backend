@@ -40,3 +40,5 @@ typing_extensions==4.8.0
 uritemplate==4.1.1
 urllib3==2.1.0
 Werkzeug==3.0.1
+
+google~=3.0.0
