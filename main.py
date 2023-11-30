@@ -233,7 +233,7 @@ def get_cliente():
 
 if __name__ == '__main__':
     # Planilha.cadastrar_activ(f"lion.xlsx")
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)
     # Planilha.cadastrar_cliente(f"lion.xlsx")
     # Planilha.cadastrar_dolar(f"lion.xlsx")
     # Planilha.cadastrar_b3(f"lion.xlsx")
