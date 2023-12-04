@@ -185,7 +185,6 @@ def post_b3():
     try:
         Planilha.cadastrar_b3(request.json)
     except ValueError as erro:
-
         return make_response(jsonify({"message": f"{erro}"}), 400)
     else:
         return make_response(jsonify({"message": "Cotação atualizada com sucesso!"}), 200)
@@ -217,6 +216,7 @@ def post_operacional():
 @app.route('/planilha', methods=['GET'])
 def get_cliente():
     try:
+        print("foi feito um get para cliente")
         dados = Planilha.get_cliente()
     except ValueError as erro:
         return make_response(jsonify({"message": f"{erro}"}), 400)
@@ -224,6 +224,7 @@ def get_cliente():
         # TODO Talvez esse 0 possa mudar caso mude a planilha clientes TALVEZ ISSO N FUNCIONE TEM Q TESTAR COM O POSTMAN
         clientes = []
         for i, linha in enumerate(dados['tab']):
+
             vet = {"Codinome": linha[0], "Coordenadas": dados['coordenadas'][i]}
             clientes.append(vet)
 
@@ -233,7 +234,7 @@ def get_cliente():
 
 if __name__ == '__main__':
     # Planilha.cadastrar_activ(f"lion.xlsx")
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    app.run(host="0.0.0.0", port=5000, debug=True)
     # Planilha.cadastrar_cliente(f"lion.xlsx")
     # Planilha.cadastrar_dolar(f"lion.xlsx")
     # Planilha.cadastrar_b3(f"lion.xlsx")

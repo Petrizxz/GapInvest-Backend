@@ -200,33 +200,42 @@ def cadastrar_dolar(request):
 def cadastrar_b3(request):
     print("Cadastrando cotação b3 na planilha")
 
-    # valor = {"Mês": "10", "Ano": "2023", "b3": "113143,67"}
-    # valor = list(valor.values())
-    valor = list(request.values())
+    valor = {"Mês": "10", "Ano": "2023", "b3": "113143,67"}
+    valor = list(valor.values())
+    # valor = list(request.values())
 
     sheet = service_sheet.spreadsheets()
 
     dados = Dados.get_b3(sheet, C.SHEET_ID())
 
     # Para acessar o dado do ultimo mês para calcular a taxa
-    tratamento = dados['tab'][2]
-    tratamento = tratamento[len(tratamento) - 1]
-    tratamento = float(tratamento.replace(',', '.'))
+    print("fazendo o tratamento de dados")
+    try:
 
-    part = float(valor[2].replace(',', '.')) / tratamento
-    part = part - 1
+        tratamento = dados['tab'][2]
+        tratamento = tratamento[len(tratamento) - 1]
+        tratamento = float(tratamento.replace(',', '.'))
+        print("Tratamento feito")
 
-    valor.append(part)
+        part = float(valor[2].replace(',', '.')) / tratamento
+        part = part - 1
+        print("Conta realizada")
 
-    for i, campo in enumerate(dados['tab']):
-        campo.append(valor[i])
+    except ValueError as erro:
+        raise ValueError(f"Não foi possível calcular a taxa da b3. Erro: {erro}")
+    else:
+        valor.append(part)
 
-    valor = dados['tab']
-    # Pegando a planilha Resultado robôs, através da api do google sheets
-    sheet.values().update(spreadsheetId=C.SHEET_ID(), range=f'B3 Histórico!I17', valueInputOption="USER_ENTERED",
-                          body={'values': valor}).execute()  # TODO VER UMA pra deixar o range automatico
+        for i, campo in enumerate(dados['tab']):
+            campo.append(valor[i])
 
-    print("Dados inseridos!")
+        valor = dados['tab']
+        # Pegando a planilha Resultado robôs, através da api do google sheets
+        print("Vai enviar para a planilha")
+        sheet.values().update(spreadsheetId=C.SHEET_ID(), range=f'B3 Histórico!I17', valueInputOption="USER_ENTERED",
+                              body={'values': valor}).execute()  # TODO VER UMA pra deixar o range automatico
+
+        print("Dados inseridos!")
 
 
 def cadastrar_dados_cliente(request):
@@ -256,7 +265,7 @@ def cadastrar_dados_cliente(request):
     # for campos in info_cliente.values():
     for campos in request.values():
         if type(campos) is dict:
-            for coordenada in campos['Coordenada']:
+            for coordenada in campos['Coordenadas']:
                 nova_linha[0].append(f"={coordenada}")
         else:
             nova_linha[0].append(campos)

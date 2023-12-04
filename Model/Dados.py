@@ -42,6 +42,7 @@ class Dados:
     @staticmethod
     def get_b3(sheet, sheet_id):
         try:
+            print("VAmos Buscar os dados antigos")
             dados = sheet.values().get(spreadsheetId=sheet_id, range=C.RANGE_B3()).execute()
             dados = dados['values']
             dados = {
