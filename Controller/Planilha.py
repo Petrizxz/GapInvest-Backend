@@ -22,7 +22,7 @@ service = Create_Service(C.CLIENT_SECRET_FILE(), C.API_NAME(), C.API_VERSION(), 
 service_sheet = Create_Service(C.CLIENT_SECRET_FILE(), C.API_NAME_SHEET(), C.API_VERSION_SHEET(), C.SCOPES_SHEET())
 
 
-#teste
+# teste
 
 def download():
     # UPLOAD
@@ -304,6 +304,29 @@ def cadastrar_operacional(request):
 def get_cliente():
     sheet = service_sheet.spreadsheets()
     return Cliente.get_clientes(sheet, C.SHEET_ID())
+
+
+def get_verifica_cliente(conta, codinome):
+
+    try:
+        sheet = service_sheet.spreadsheets()
+        dados_clientes = sheet.values().get(spreadsheetId=C.SHEET_ID(), range=C.RANGE_CLIENTE()).execute()
+        dados_clientes = dados_clientes["values"]
+    except ValueError as erro:
+        raise erro
+    else:
+        try:
+            conta_verificada = Cliente.verificar_cliente_activ(conta, dados_clientes)
+        except ValueError as erro:
+            raise erro
+        else:
+            if conta_verificada["Codinome"].lower() == codinome.lower():
+                return conta_verificada
+            else:
+                raise ValueError(f"O Codinome {codinome} não foi encontrado.")
+
+
+
 
 
 if __name__ == '__main__':

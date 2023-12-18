@@ -1,31 +1,18 @@
 from uteis.constantes.const import C
 
 
-def _verificar_cliente_activ(conta, clientes):
-    dic = None
-    for i in range(len(clientes)):
-        if clientes[i][4] == conta:
-            dic = {"Codinome": clientes[i][0], "Corretora": clientes[i][1], "Estrategia": clientes[i][2],
-                   "Bolsa": clientes[i][3], "Conta": clientes[i][4],
-                   "Coordenada": 'E' + str(i + 2), "Row": str(i + 2)}
-            break
-    return dic
-
-
 class Cliente:
     def __init__(self, sheet, sheet_id, conta):
         try:
             dados_clientes = sheet.values().get(spreadsheetId=sheet_id, range=C.RANGE_CLIENTE()).execute()
 
-            dados_clientes = dados_clientes['values']
+            dados_clientes = dados_clientes["values"]
             for i in dados_clientes:
                 print(i)
                 for j in i:
                     print(j)
-            dic = _verificar_cliente_activ(conta, dados_clientes)
-            if dic is None:
-                raise ValueError(f"A conta {conta} não foi encontrada na tabela de clientes. Cadastre o cliente na "
-                                 f"aba Clientes da planilha")
+            dic = self.verificar_cliente_activ(conta, dados_clientes)
+
         except ValueError as erro:
             raise erro
         else:
@@ -37,7 +24,8 @@ class Cliente:
 
     @staticmethod
     def get_clientes(sheet, sheet_id):
-        alfabeto = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+        alfabeto = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+                    'U', 'V', 'W', 'X', 'Y', 'Z']
         try:
             dados_clientes = sheet.values().get(spreadsheetId=sheet_id, range=C.RANGE_CLIENTE()).execute()
             dados_clientes = dados_clientes['values']
@@ -82,4 +70,16 @@ class Cliente:
         else:
             return dados_clientes
 
-
+    @staticmethod
+    def verificar_cliente_activ(conta, clientes):
+        dic = None
+        for i in range(len(clientes)):
+            if clientes[i][4] == conta:
+                dic = {"Codinome": clientes[i][0], "Corretora": clientes[i][1], "Estrategia": clientes[i][2],
+                       "Bolsa": clientes[i][3], "Conta": clientes[i][4],
+                       "Coordenada": 'E' + str(i + 2), "Row": str(i + 2)}
+                break
+        if dic is None:
+            raise ValueError(f"A conta {conta} não foi encontrada.")
+        else:
+            return dic

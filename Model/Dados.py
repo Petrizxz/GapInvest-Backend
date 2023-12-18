@@ -1,5 +1,6 @@
 from uteis.constantes.const import C
 
+
 class Dados:
     def __init__(self, sheet, sheet_id, conta):
         dados = sheet.values().get(spreadsheetId=sheet_id, range=C.RANGE_NAME()).execute()
