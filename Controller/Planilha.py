@@ -169,7 +169,7 @@ def cadastrar_cliente(request):
 
     dados = Cliente.get_clientes(sheet, C.SHEET_ID())
     print(dados['insert_row'])
-    sheet.values().update(spreadsheetId=C.SHEET_ID(), range=f'Clientes!A{dados['insert_row']}',
+    sheet.values().update(spreadsheetId=C.SHEET_ID(), range=f'Clientes!A{dados["insert_row"]}',
                           valueInputOption="USER_ENTERED", body={'values': valor}).execute()
     print("Dados inseridos!")
 
