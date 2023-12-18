@@ -27,8 +27,8 @@ service_sheet = Create_Service(C.CLIENT_SECRET_FILE(), C.API_NAME_SHEET(), C.API
 def download():
     # UPLOAD
     folder_id = '1Qd55AZduTApSwel8SW_HhkkdFD110nVu'
-    file_names = ['lion.xlsx']
-    mime_types = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
+    file_names = ["lion.xlsx"]
+    mime_types = ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"]
 
     file_metadata = {
         'name': file_names[0],
@@ -47,7 +47,7 @@ def download():
 def upload(filename):
     # UPLOAD
     print('Entro na função upload')
-    # file_names = ['lion.xlsx']
+    # file_names = ["lion.xlsx"]
     folder_id = ''
     if filename[
        6:8] == '01':  # TODO Trocar isso pela logica dos feriado e finais de semana ou eu mando anderson escvrever mensl e parcial nos extratos que é mais facil :3
@@ -56,7 +56,7 @@ def upload(filename):
         folder_id = C.FOLDER_PARCIAL_ID()
 
     file_names = [filename]
-    mime_types = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']
+    mime_types = ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"]
 
     file_metadata = {
         'name': file_names[0],
@@ -82,7 +82,7 @@ def cadastrar_activ(filename):
         # Buscando as fórmulas que serão usadas para cadastrar os novos dados
         formulas = sheet.values().get(spreadsheetId=C.SHEET_ID(), range='Dados Activ!T3:V3',
                                       valueRenderOption='FORMULA').execute()
-        formulas = formulas['values']
+        formulas = formulas["values"]
 
         print("Lendo o arquivo enviado. Isso pode demorar um pouco!")
         # Criando a Classe Extrato
@@ -168,7 +168,7 @@ def cadastrar_cliente(request):
     sheet = service_sheet.spreadsheets()  # TODO VERIFICAR SE ESSA PUXADA DE SHEET PODE SER GLOBAL PARA CARREGAR SO 1 vez
 
     dados = Cliente.get_clientes(sheet, C.SHEET_ID())
-    print(dados['insert_row'])
+    print(dados["insert_row"])
     sheet.values().update(spreadsheetId=C.SHEET_ID(), range=f'Clientes!A{dados["insert_row"]}',
                           valueInputOption="USER_ENTERED", body={'values': valor}).execute()
     print("Dados inseridos!")
@@ -185,12 +185,12 @@ def cadastrar_dolar(request):
 
     dados = Dados.get_dolar(sheet, C.SHEET_ID())
 
-    for i, campo in enumerate(dados['tab']):
+    for i, campo in enumerate(dados["tab"]):
         campo.append(valor[i])
 
-    valor = dados['tab']
+    valor = dados["tab"]
     # Pegando a planilha Resultado robôs, através da api do google sheets
-    print(dados['insert_row'])
+    print(dados["insert_row"])
     sheet.values().update(spreadsheetId=C.SHEET_ID(), range=f'B3 Histórico!I22', valueInputOption="USER_ENTERED",
                           body={'values': valor}).execute()  # TODO VER UMA LOGICA DE INSERIR POR COLUNA
 
@@ -212,7 +212,7 @@ def cadastrar_b3(request):
     print("fazendo o tratamento de dados")
     try:
 
-        tratamento = dados['tab'][2]
+        tratamento = dados["tab"][2]
         tratamento = tratamento[len(tratamento) - 1]
         tratamento = float(tratamento.replace(',', '.'))
         print("Tratamento feito")
@@ -226,10 +226,10 @@ def cadastrar_b3(request):
     else:
         valor.append(part)
 
-        for i, campo in enumerate(dados['tab']):
+        for i, campo in enumerate(dados["tab"]):
             campo.append(valor[i])
 
-        valor = dados['tab']
+        valor = dados["tab"]
         # Pegando a planilha Resultado robôs, através da api do google sheets
         print("Vai enviar para a planilha")
         sheet.values().update(spreadsheetId=C.SHEET_ID(), range=f'B3 Histórico!I17', valueInputOption="USER_ENTERED",
@@ -258,22 +258,22 @@ def cadastrar_dados_cliente(request):
     formulas = sheet.values().get(spreadsheetId=C.SHEET_ID(), range=C.RANGE_FORMULAS_DADOS_CLIENTES(),
                                   valueRenderOption='FORMULA').execute()
 
-    formulas = formulas['values']
+    formulas = formulas["values"]
     dados_clientes = Cliente.get_dados_clientes(sheet, C.SHEET_ID())
     nova_linha = [[]]
 
     # for campos in info_cliente.values():
     for campos in request.values():
         if type(campos) is dict:
-            for coordenada in campos['Coordenadas']:
+            for coordenada in campos["Coordenadas"]:
                 nova_linha[0].append(f"={coordenada}")
         else:
             nova_linha[0].append(campos)
 
     for formula in formulas[0]:
-        nova_linha[0].append(formula.replace("3", dados_clientes['insert_row']))
+        nova_linha[0].append(formula.replace("3", dados_clientes["insert_row"]))
 
-    sheet.values().update(spreadsheetId=C.SHEET_ID(), range=f'Clientes!H{dados_clientes['insert_row']}',
+    sheet.values().update(spreadsheetId=C.SHEET_ID(), range=f'Clientes!H{dados_clientes["insert_row"]}',
                           valueInputOption="USER_ENTERED", body={'values': nova_linha}).execute()
     print("Dados inseridos!")
 
