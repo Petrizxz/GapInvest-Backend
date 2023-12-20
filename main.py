@@ -124,21 +124,29 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 #             if celula.value is None:
 #                 return extrato_ativa[f"B{celula.row - 1}:G{celula.row - 1}"]
 
-def allowed_file(filename):
+def allowed_file(filename, ALLOWED_EXTENSIONS):
     # '.' in file verifica se tem ponto no arquivo.
     # Rsplit separa a extensão do nome deixa minusculo e compara se a extensão é valida no vetor ALLOWED_EXTENSIONS
     return '.' in filename and \
-        filename.rsplit('.', 1)[1].lower() in C.ALLOWED_EXTENSIONS()
+        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS()
 
 
-@app.route('/', methods=['POST'])
+def buscar_nome_arquivo(rota):
+    vet = []
+    for caminho, subpasta, arquivos in os.walk(rota):
+        for nome in arquivos:
+            vet.append(nome)
+    return vet
+
+
+@app.route('/upload-sheet/', methods=['POST'])
 def upload():
     # Se não enviar um arquivo
     if 'file' not in request.files:
         return make_response(jsonify({"message": "Arquivo obrigatório!"}), 500)
 
     file = request.files['file']  # confere extensão
-    if file and allowed_file(file.filename):
+    if file and allowed_file(file.filename, C.ALLOWED_EXTENSIONS_SHEET):
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['folder'], filename))
 
@@ -155,6 +163,37 @@ def upload():
         else:
             os.remove(f'./folder/{filename}')
             return make_response(jsonify({"message": "Upload realizado com sucesso!"}), 200)
+
+
+@app.route('/upload-img/', methods=['POST'])
+def upload_img():
+
+    if 'file' not in request.files:
+        return make_response(jsonify({"message": "Arquivo obrigatório!"}), 500)
+
+    file = request.files['file']
+    if file and allowed_file(file.filename, C.ALLOWED_EXTENSIONS_IMG):
+
+        try:
+            clientes = Planilha.get_cliente()
+            clientes = list(map(lambda cliente: cliente[0].lower(), clientes["tab"]))
+        except ValueError as erro:
+            return make_response(jsonify({"message": f"{erro}"}), 400)
+        else:
+            filename = secure_filename(file.filename)
+            nome_arquivo = ""
+            for extensions in C.ALLOWED_EXTENSIONS_IMG():
+                nome_arquivo = filename.removesuffix("." + extensions).lower()
+                if nome_arquivo != filename.lower():
+                    break
+
+            if nome_arquivo in clientes:
+                print(f"app.config['folder']: {app.config['folder']}")
+                file.save(os.path.join(app.config['folder'], filename))
+                print(f"caminho: {os.path.join(app.config['folder'], filename)}")
+                return make_response(jsonify({"message": "Upload realizado com sucesso!"}), 200)
+            else:
+                return make_response(jsonify({"message": "Nome do Cliente não foi encontrado na Planilha!"}), 400)
 
 
 #################################################################  POST  ######################################################
@@ -244,7 +283,7 @@ def get_verifica_cliente(conta, codinome):
 
 if __name__ == '__main__':
     # Planilha.cadastrar_activ(f"lion.xlsx")
-    app.run(host="0.0.0.0", port=3000, debug=False)
+    app.run(host="0.0.0.0", port=5000, debug=True)
     # Planilha.cadastrar_cliente(f"lion.xlsx")
     # Planilha.cadastrar_dolar(f"lion.xlsx")
     # Planilha.cadastrar_b3(f"lion.xlsx")
@@ -253,3 +292,4 @@ if __name__ == '__main__':
     # Planilha.cadastrar_operacional(f"lion.xlsx")
     # get_cliente()
     # Planilha.get_verifica_cliente()
+    # upload_img()

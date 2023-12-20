@@ -5,7 +5,8 @@ UPLOAD_FOLDER = 'folder'
 ####################################################CONFIGURAÇÃO DAS OPENPYXL ########################################################################################
 
 # Caso os extratos tiver outro formato de Excel é so adicionar aqui
-ALLOWED_EXTENSIONS = set(['xlsx'])
+ALLOWED_EXTENSIONS_SHEET = set(['xlsx'])
+ALLOWED_EXTENSIONS_IMG = set(['pdf', 'png', 'jpg', 'jpeg', 'gif'])
 ######################################### CONFIGURAÇÃO DAS API ############################################################################
 API_NAME_SHEET = 'sheets'
 API_VERSION_SHEET = 'v4'
@@ -67,8 +68,12 @@ class C:
         return UPLOAD_FOLDER
 
     @staticmethod
-    def ALLOWED_EXTENSIONS():
-        return ALLOWED_EXTENSIONS
+    def ALLOWED_EXTENSIONS_SHEET():
+        return ALLOWED_EXTENSIONS_SHEET
+
+    @staticmethod
+    def ALLOWED_EXTENSIONS_IMG():
+        return ALLOWED_EXTENSIONS_IMG
 
     @staticmethod
     def API_NAME_SHEET():
