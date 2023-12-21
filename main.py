@@ -2,7 +2,7 @@ from __future__ import print_function
 
 import os
 
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response, send_from_directory
 from werkzeug.utils import secure_filename
 from flask_cors import CORS
 
@@ -163,7 +163,8 @@ def upload():
         else:
             os.remove(f'./folder/{filename}')
             return make_response(jsonify({"message": "Upload realizado com sucesso!"}), 200)
-
+    else:
+        return make_response(jsonify({"message": f"Tipo de arquivo incorreto, envie uma planilha Excel!"}), 400)
 
 @app.route('/upload-img/', methods=['POST'])
 def upload_img():
@@ -194,6 +195,19 @@ def upload_img():
                 return make_response(jsonify({"message": "Upload realizado com sucesso!"}), 200)
             else:
                 return make_response(jsonify({"message": "Nome do Cliente não foi encontrado na Planilha!"}), 400)
+    else:
+        return make_response(jsonify({"message": f"Tipo de arquivo incorreto, envie um arquivo de midia!"}), 400)
+
+@app.route('/get-img/<nome>', methods=['GET'])
+def get_img(nome):
+    arquivos = buscar_nome_arquivo(C.UPLOAD_FOLDER())
+
+    for arquivo in arquivos:
+        for extensions in C.ALLOWED_EXTENSIONS_IMG():
+            if nome.lower() == arquivo.removesuffix("." + extensions).lower():
+                return send_from_directory(C.UPLOAD_FOLDER(), arquivo, as_attachment=False)
+
+    return make_response(jsonify({"message": "Nome do Cliente não foi encontrado nos Upload!"}), 400)
 
 
 #################################################################  POST  ######################################################
@@ -283,7 +297,7 @@ def get_verifica_cliente(conta, codinome):
 
 if __name__ == '__main__':
     # Planilha.cadastrar_activ(f"lion.xlsx")
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=3000, debug=False)
     # Planilha.cadastrar_cliente(f"lion.xlsx")
     # Planilha.cadastrar_dolar(f"lion.xlsx")
     # Planilha.cadastrar_b3(f"lion.xlsx")

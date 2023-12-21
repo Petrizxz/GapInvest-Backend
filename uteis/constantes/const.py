@@ -6,7 +6,7 @@ UPLOAD_FOLDER = 'folder'
 
 # Caso os extratos tiver outro formato de Excel é so adicionar aqui
 ALLOWED_EXTENSIONS_SHEET = set(['xlsx'])
-ALLOWED_EXTENSIONS_IMG = set(['pdf', 'png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS_IMG = set(['png', 'jpg', 'jpeg'])
 ######################################### CONFIGURAÇÃO DAS API ############################################################################
 API_NAME_SHEET = 'sheets'
 API_VERSION_SHEET = 'v4'
