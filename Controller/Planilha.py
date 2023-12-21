@@ -200,9 +200,9 @@ def cadastrar_dolar(request):
 def cadastrar_b3(request):
     print("Cadastrando cotação b3 na planilha")
 
-    valor = {"Mês": "10", "Ano": "2023", "b3": "113143,67"}
-    valor = list(valor.values())
-    # valor = list(request.values())
+    # valor = {"Mês": "10", "Ano": "2023", "b3": "113143,67"}
+    # valor = list(valor.values())
+    valor = list(request.values())
 
     sheet = service_sheet.spreadsheets()
 
