@@ -49,8 +49,7 @@ def upload(filename):
     print('Entro na função upload')
     # file_names = ["lion.xlsx"]
     folder_id = ''
-    if filename[
-       6:8] == '01':  # TODO Trocar isso pela logica dos feriado e finais de semana ou eu mando anderson escvrever mensl e parcial nos extratos que é mais facil :3
+    if filename[6:8] == '01':  # TODO Trocar isso pela logica dos feriado e finais de semana ou eu mando anderson escvrever mensl e parcial nos extratos que é mais facil :3
         folder_id = C.FOLDER_MENSAL_ID()
     else:
         folder_id = C.FOLDER_PARCIAL_ID()

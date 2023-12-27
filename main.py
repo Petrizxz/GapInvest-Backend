@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import os
+import tempfile
 
 from flask import Flask, request, jsonify, make_response, send_from_directory
 from werkzeug.utils import secure_filename
@@ -147,22 +148,23 @@ def upload():
 
     file = request.files['file']  # confere extensão
     if file and allowed_file(file.filename, C.ALLOWED_EXTENSIONS_SHEET):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['folder'], filename))
+        with tempfile.TemporaryDirectory() as pasta_temp:
+            print('created temporary directory', pasta_temp)
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(pasta_temp, filename))
 
-        print(f"Arquivo {filename} recebido com sucesso!")
-        print(f"Arquivo salvo no caminho: .{os.path.join(app.config['folder'], filename)}")
 
-        try:
-            Planilha.cadastrar_activ(filename)
-        except ValueError as erro:
-            print('vai remover arquivo')
-            os.remove(f'./folder/{filename}')
-            print('arquivo removido com sucesso!')
-            return make_response(jsonify({"message": f"{erro}"}), 400)
-        else:
-            os.remove(f'./folder/{filename}')
-            return make_response(jsonify({"message": "Upload realizado com sucesso!"}), 200)
+            print(f"Arquivo {filename} recebido com sucesso!")
+            print(f"Arquivo salvo no caminho: .{os.path.join(pasta_temp, filename)}")
+            filename = os.path.join(pasta_temp, filename)
+            try:
+                Planilha.cadastrar_activ(filename)
+            except ValueError as erro:
+
+                print('arquivo removido com sucesso!')
+                return make_response(jsonify({"message": f"{erro}"}), 400)
+            else:
+                return make_response(jsonify({"message": "Upload realizado com sucesso!"}), 200)
     else:
         return make_response(jsonify({"message": f"Tipo de arquivo incorreto, envie uma planilha Excel!"}), 400)
 
@@ -285,6 +287,7 @@ def get_cliente():
 
 
 @app.route('/planilha/<conta>/<codinome>', methods=['GET'])
+
 def get_verifica_cliente(conta, codinome):
     try:
         print("foi feito um get para verificar cliente")
@@ -297,7 +300,7 @@ def get_verifica_cliente(conta, codinome):
 
 if __name__ == '__main__':
     # Planilha.cadastrar_activ(f"lion.xlsx")
-    app.run(host="0.0.0.0", port=3000, debug=False)
+    app.run(host="0.0.0.0", port=5000, debug=False)
     # Planilha.cadastrar_cliente(f"lion.xlsx")
     # Planilha.cadastrar_dolar(f"lion.xlsx")
     # Planilha.cadastrar_b3(f"lion.xlsx")

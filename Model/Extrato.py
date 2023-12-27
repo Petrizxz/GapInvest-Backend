@@ -29,7 +29,7 @@ def _procurar_trasacoes(leitura):
 class Extrato:
     def __init__(self, filename):
         print("vai ler extrato agr")
-        leitura = load_workbook(f"./folder/{filename}")
+        leitura = load_workbook(f"{filename}")
         leitura = leitura.active
         print("leu agr")
 

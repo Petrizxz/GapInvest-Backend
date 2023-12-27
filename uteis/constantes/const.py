@@ -1,6 +1,9 @@
 ######################################### LOCALIZAÇÃO DE ARQUIVOS  ############################################################################
+import tempfile
+
 CLIENT_SECRET_FILE = './uteis/autenticacao/credentials.json'
 UPLOAD_FOLDER = 'folder'
+# UPLOAD_FOLDER esta setado la em baixo para mandar um diretorio temp
 
 ####################################################CONFIGURAÇÃO DAS OPENPYXL ########################################################################################
 
@@ -65,7 +68,10 @@ class C:
 
     @staticmethod
     def UPLOAD_FOLDER():
-        return UPLOAD_FOLDER
+        with tempfile.TemporaryDirectory() as pasta_temp:
+            print('created temporary directory', pasta_temp)
+        return pasta_temp
+        # return UPLOAD_FOLDER
 
     @staticmethod
     def ALLOWED_EXTENSIONS_SHEET():
