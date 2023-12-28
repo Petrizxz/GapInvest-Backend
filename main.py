@@ -152,16 +152,11 @@ def upload():
             print('created temporary directory', pasta_temp)
             filename = secure_filename(file.filename)
             file.save(os.path.join(pasta_temp, filename))
-
-
             print(f"Arquivo {filename} recebido com sucesso!")
             print(f"Arquivo salvo no caminho: .{os.path.join(pasta_temp, filename)}")
-            filename = os.path.join(pasta_temp, filename)
             try:
-                Planilha.cadastrar_activ(filename)
+                Planilha.cadastrar_activ(pasta_temp, filename)
             except ValueError as erro:
-
-                print('arquivo removido com sucesso!')
                 return make_response(jsonify({"message": f"{erro}"}), 400)
             else:
                 return make_response(jsonify({"message": "Upload realizado com sucesso!"}), 200)
@@ -176,7 +171,6 @@ def upload_img():
 
     file = request.files['file']
     if file and allowed_file(file.filename, C.ALLOWED_EXTENSIONS_IMG):
-
         try:
             clientes = Planilha.get_cliente()
             clientes = list(map(lambda cliente: cliente[0].lower(), clientes["tab"]))
@@ -191,10 +185,12 @@ def upload_img():
                     break
 
             if nome_arquivo in clientes:
-                print(f"app.config['folder']: {app.config['folder']}")
-                file.save(os.path.join(app.config['folder'], filename))
-                print(f"caminho: {os.path.join(app.config['folder'], filename)}")
-                return make_response(jsonify({"message": "Upload realizado com sucesso!"}), 200)
+                with tempfile.TemporaryDirectory() as pasta_temp:
+                    print(f"app.config['folder']: {pasta_temp}")
+                    file.save(os.path.join(pasta_temp, filename))
+                    print(f"caminho: {os.path.join(pasta_temp, filename)}")
+                    Planilha.upload(pasta_temp, filename, C.ALLOWED_MIME_TYPES_IMG(), C.FOLDER_RELATORIO_ID())
+                    return make_response(jsonify({"message": "Upload realizado com sucesso!"}), 200)
             else:
                 return make_response(jsonify({"message": "Nome do Cliente não foi encontrado na Planilha!"}), 400)
     else:

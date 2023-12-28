@@ -1,15 +1,14 @@
 ######################################### LOCALIZAÇÃO DE ARQUIVOS  ############################################################################
-import tempfile
-
 CLIENT_SECRET_FILE = './uteis/autenticacao/credentials.json'
 UPLOAD_FOLDER = 'folder'
-# UPLOAD_FOLDER esta setado la em baixo para mandar um diretorio temp
 
 ####################################################CONFIGURAÇÃO DAS OPENPYXL ########################################################################################
 
 # Caso os extratos tiver outro formato de Excel é so adicionar aqui
 ALLOWED_EXTENSIONS_SHEET = set(['xlsx'])
-ALLOWED_EXTENSIONS_IMG = set(['png', 'jpg', 'jpeg'])
+ALLOWED_EXTENSIONS_IMG = set(['png'])
+ALLOWED_MIME_TYPES_SHEET = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+ALLOWED_MIME_TYPES_IMG = 'image/png'
 ######################################### CONFIGURAÇÃO DAS API ############################################################################
 API_NAME_SHEET = 'sheets'
 API_VERSION_SHEET = 'v4'
@@ -36,6 +35,7 @@ Planilha OPERACIONAL Teste: 1wrDddlkeG63usM_xcJgEzkh-d69rAtUcq5bsXKGmCLU
 
 FOLDER_PARCIAL_ID = '1Rr2sukEQdKsI1eNWqoJos-rCJ3PtX4Zg'
 FOLDER_MENSAL_ID = '1SilcNjS-Z1qzi8KhqH0q1Tiq3k7vaMrC'
+FOLDER_RELATORIO_ID = "1u-g8FEOVEX7n1W2dZWysGz1QIxpN-RiE"
 
 """ 
 # Google Drive - API - INFORMAÇÕES COMPLEMENTARES
@@ -68,10 +68,7 @@ class C:
 
     @staticmethod
     def UPLOAD_FOLDER():
-        with tempfile.TemporaryDirectory() as pasta_temp:
-            print('created temporary directory', pasta_temp)
-        return pasta_temp
-        # return UPLOAD_FOLDER
+        return UPLOAD_FOLDER
 
     @staticmethod
     def ALLOWED_EXTENSIONS_SHEET():
@@ -80,6 +77,14 @@ class C:
     @staticmethod
     def ALLOWED_EXTENSIONS_IMG():
         return ALLOWED_EXTENSIONS_IMG
+
+    @staticmethod
+    def ALLOWED_MIME_TYPES_IMG():
+        return ALLOWED_MIME_TYPES_IMG
+
+    @staticmethod
+    def ALLOWED_MIME_TYPES_SHEET():
+        return ALLOWED_MIME_TYPES_SHEET
 
     @staticmethod
     def API_NAME_SHEET():
@@ -120,6 +125,10 @@ class C:
     @staticmethod
     def FOLDER_MENSAL_ID():
         return FOLDER_MENSAL_ID
+
+    @staticmethod
+    def FOLDER_RELATORIO_ID():
+        return FOLDER_RELATORIO_ID
 
     @staticmethod
     def RANGE_NAME():

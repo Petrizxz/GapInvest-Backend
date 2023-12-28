@@ -44,24 +44,20 @@ def download():
     ).execute()
 
 
-def upload(filename):
-    # UPLOAD
+def upload(pasta, filename, types, folder_id):
+    # UPLOAD C:uasud/pedro/temp/asdd/arquivo.xlxs
     print('Entro na função upload')
     # file_names = ["lion.xlsx"]
-    folder_id = ''
-    if filename[6:8] == '01':  # TODO Trocar isso pela logica dos feriado e finais de semana ou eu mando anderson escvrever mensl e parcial nos extratos que é mais facil :3
-        folder_id = C.FOLDER_MENSAL_ID()
-    else:
-        folder_id = C.FOLDER_PARCIAL_ID()
 
     file_names = [filename]
-    mime_types = ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"]
+    mime_types = [types] # TODO FAZER UM JEITO PARA ACEitar mais de um tipo de img
 
     file_metadata = {
         'name': file_names[0],
         'parents': [folder_id]
     }
-    name = './folder/{0}'.format(file_names[0])
+    name = f"{pasta}/{filename}"
+    # './folder/{0}'.format(file_names[0])
     media = MediaFileUpload(name, mimetype=mime_types[0])
 
     service.files().create(
@@ -71,8 +67,9 @@ def upload(filename):
     ).execute()
 
 
-def cadastrar_activ(filename):
+def cadastrar_activ(pasta, filename):
     try:
+
         print("Acessando a planilha online")
         # Pegando a planilha Resultado robôs, através da api do google sheets
         sheet = service_sheet.spreadsheets()
@@ -85,7 +82,7 @@ def cadastrar_activ(filename):
 
         print("Lendo o arquivo enviado. Isso pode demorar um pouco!")
         # Criando a Classe Extrato
-        extrato = Extrato(filename)
+        extrato = Extrato(f"{pasta}/{filename}")
 
         print("Conferindo se o cliente ja esta cadastrado!")
         # Criando a Classe Cliente
@@ -145,7 +142,7 @@ def cadastrar_activ(filename):
                 print("Dados inseridos!")
                 try:
                     print("Vamos subir o arquivo para o drive.")
-                    upload(filename)
+                    upload(pasta, filename, C.ALLOWED_EXTENSIONS_SHEET(), C.FOLDER_PARCIAL_ID())
                 except Exception as erro:
                     raise erro
 
