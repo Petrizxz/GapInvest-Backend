@@ -4,6 +4,7 @@ import os
 import tempfile
 
 from flask import Flask, request, jsonify, make_response, send_from_directory
+from googleapiclient.errors import HttpError
 from werkzeug.utils import secure_filename
 from flask_cors import CORS
 
@@ -198,12 +199,14 @@ def upload_img():
 
 @app.route('/get-img/<nome>', methods=['GET'])
 def get_img(nome):
-    arquivos = buscar_nome_arquivo(C.UPLOAD_FOLDER())
 
-    for arquivo in arquivos:
+    arquivos = Planilha.buscar_folder(C.FOLDER_RELATORIO_ID())
+        #buscar_nome_arquivo(C.UPLOAD_FOLDER()))
+
+    for arquivo in arquivos['files']:
         for extensions in C.ALLOWED_EXTENSIONS_IMG():
-            if nome.lower() == arquivo.removesuffix("." + extensions).lower():
-                return send_from_directory(C.UPLOAD_FOLDER(), arquivo, as_attachment=False)
+            if nome.lower() == arquivo["name"].removesuffix("." + extensions).lower():
+                return Planilha.dowload_google_drive(arquivo["id"])
 
     return make_response(jsonify({"message": "Nome do Cliente não foi encontrado nos Upload!"}), 400)
 
@@ -306,3 +309,5 @@ if __name__ == '__main__':
     # get_cliente()
     # Planilha.get_verifica_cliente()
     # upload_img()
+    # Planilha.buscar()
+    # get_img("Lion")

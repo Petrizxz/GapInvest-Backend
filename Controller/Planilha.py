@@ -10,10 +10,13 @@ from uteis.constantes.const import C
 
 from googleapiclient.errors import HttpError
 
+
 # Upload
-from googleapiclient.http import MediaFileUpload
+from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 
 import logging
+
+import io
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -44,13 +47,42 @@ def download():
     ).execute()
 
 
+
+def dowload_google_drive(arquivo_id):
+    try:
+        request = service.files().get_media(fileId=arquivo_id)
+        file = io.BytesIO()
+        downloader = MediaIoBaseDownload(file, request)
+        done = False
+        while done is False:
+            status, done = downloader.next_chunk()
+            print(f"Download {int(status.progress() * 100)}.")
+
+    except HttpError as error:
+        print(f"An error occurred: {error}")
+        file = None
+
+    returnn = file.getvalue()
+    return returnn
+
+
+def buscar_folder(folder_id, page_token=None):
+
+    return service.files().list(
+        q=f"'{folder_id}' in parents and trashed=false",
+        spaces="drive",
+        fields="nextPageToken, files(id, name)",
+        pageToken=page_token,
+    ).execute()
+
+
 def upload(pasta, filename, types, folder_id):
     # UPLOAD C:uasud/pedro/temp/asdd/arquivo.xlxs
     print('Entro na função upload')
     # file_names = ["lion.xlsx"]
 
     file_names = [filename]
-    mime_types = [types] # TODO FAZER UM JEITO PARA ACEitar mais de um tipo de img
+    mime_types = [types]  # TODO FAZER UM JEITO PARA ACEitar mais de um tipo de img
 
     file_metadata = {
         'name': file_names[0],
@@ -303,7 +335,6 @@ def get_cliente():
 
 
 def get_verifica_cliente(conta, codinome):
-
     try:
         sheet = service_sheet.spreadsheets()
         dados_clientes = sheet.values().get(spreadsheetId=C.SHEET_ID(), range=C.RANGE_CLIENTE()).execute()
@@ -322,11 +353,9 @@ def get_verifica_cliente(conta, codinome):
                 raise ValueError(f"O Codinome {codinome} não foi encontrado.")
 
 
-
-
-
 if __name__ == '__main__':
     print(1 + 1)
     # cadastrar_activ('')
     # upload()
     # download()
+
