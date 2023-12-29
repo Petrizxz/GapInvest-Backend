@@ -3,8 +3,7 @@ from __future__ import print_function
 import os
 import tempfile
 
-from flask import Flask, request, jsonify, make_response, send_from_directory
-from googleapiclient.errors import HttpError
+from flask import Flask, request, jsonify, make_response
 from werkzeug.utils import secure_filename
 from flask_cors import CORS
 
@@ -206,6 +205,7 @@ def get_img(nome):
     for arquivo in arquivos['files']:
         for extensions in C.ALLOWED_EXTENSIONS_IMG():
             if nome.lower() == arquivo["name"].removesuffix("." + extensions).lower():
+                print(arquivo["name"])
                 return Planilha.dowload_google_drive(arquivo["id"])
 
     return make_response(jsonify({"message": "Nome do Cliente não foi encontrado nos Upload!"}), 400)
@@ -299,7 +299,7 @@ def get_verifica_cliente(conta, codinome):
 
 if __name__ == '__main__':
     # Planilha.cadastrar_activ(f"lion.xlsx")
-    app.run(host="0.0.0.0", port=3001, debug=False)
+    app.run(host="0.0.0.0", port=5000, debug=False)
     # Planilha.cadastrar_cliente(f"lion.xlsx")
     # Planilha.cadastrar_dolar(f"lion.xlsx")
     # Planilha.cadastrar_b3(f"lion.xlsx")
@@ -309,5 +309,5 @@ if __name__ == '__main__':
     # get_cliente()
     # Planilha.get_verifica_cliente()
     # upload_img()
-    # Planilha.buscar()
+
     # get_img("Lion")

@@ -62,8 +62,7 @@ def dowload_google_drive(arquivo_id):
         print(f"An error occurred: {error}")
         file = None
 
-    returnn = file.getvalue()
-    return returnn
+    return file.getvalue()
 
 
 def buscar_folder(folder_id, page_token=None):
@@ -82,7 +81,7 @@ def upload(pasta, filename, types, folder_id):
     # file_names = ["lion.xlsx"]
 
     file_names = [filename]
-    mime_types = [types]  # TODO FAZER UM JEITO PARA ACEitar mais de um tipo de img
+    mime_types = [types]  # TODO FAZER UM JEITO PARA ACEitar mais de um tipo de img https://developers.google.com/drive/api/guides/mime-types?hl=pt-br
 
     file_metadata = {
         'name': file_names[0],
