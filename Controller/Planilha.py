@@ -50,7 +50,7 @@ def download():
 
 def dowload_google_drive(arquivo_id):
     try:
-        request = service.files().get_media(fileId=arquivo_id)
+        request = service.files().get(fileId=arquivo_id)
         file = io.BytesIO()
         downloader = MediaIoBaseDownload(file, request)
         done = False
