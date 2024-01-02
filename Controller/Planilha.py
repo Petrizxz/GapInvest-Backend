@@ -1,3 +1,5 @@
+import os
+import tempfile
 from datetime import datetime
 
 from Model.Cliente import Cliente
@@ -10,6 +12,9 @@ from uteis.constantes.const import C
 
 from googleapiclient.errors import HttpError
 
+import tempfile
+
+from flask import Flask, request, jsonify, make_response, send_from_directory
 
 # Upload
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
@@ -48,21 +53,23 @@ def download():
 
 
 
-def dowload_google_drive(arquivo_id):
+def dowload_google_drive(arquivo_id, filename):
     try:
-        request = service.files().get(fileId=arquivo_id)
+        request = service.files().get_media(fileId=arquivo_id)
         file = io.BytesIO()
-        downloader = MediaIoBaseDownload(file, request)
+        downloader = MediaIoBaseDownload(fd=file, request=request)
         done = False
         while done is False:
             status, done = downloader.next_chunk()
             print(f"Download {int(status.progress() * 100)}.")
-
+        with tempfile.TemporaryDirectory() as pasta_temp:
+            with open(os.path.join(pasta_temp, filename), 'wb') as f:
+                f.write(file.read())
+                f.close
+            return send_from_directory(pasta_temp, filename, as_attachment=False)
     except HttpError as error:
         print(f"An error occurred: {error}")
         file = None
-
-    return file.getvalue()
 
 
 def buscar_folder(folder_id, page_token=None):

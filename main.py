@@ -3,7 +3,7 @@ from __future__ import print_function
 import os
 import tempfile
 
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response, send_from_directory
 from werkzeug.utils import secure_filename
 from flask_cors import CORS
 
@@ -206,7 +206,9 @@ def get_img(nome):
         for extensions in C.ALLOWED_EXTENSIONS_IMG():
             if nome.lower() == arquivo["name"].removesuffix("." + extensions).lower():
                 print(arquivo["name"])
-                return Planilha.dowload_google_drive(arquivo["id"])
+                print(arquivo["id"])
+                return Planilha.dowload_google_drive(arquivo["id"], arquivo["name"])
+
 
     return make_response(jsonify({"message": "Nome do Cliente não foi encontrado nos Upload!"}), 400)
 
