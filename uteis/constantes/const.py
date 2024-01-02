@@ -19,8 +19,8 @@ API_VERSION = 'v3'
 SCOPES = ['https://www.googleapis.com/auth/drive']
 
 ######################################### CONFIGURAÇÃO DAS PLANILHAS ############################################################################
-
-SHEET_ID = '1ogJGSwp6zLsAD3JYq30Ha9Vc9LHNY1Oi9uGiDBpesq8'
+#'1ogJGSwp6zLsAD3JYq30Ha9Vc9LHNY1Oi9uGiDBpesq8'
+SHEET_ID = '1wAe-D0kgYnbvWoPFn1Hw8okDFjRooM_Yp9BYevAxDLY'
 SHEET_ID_OPERACIONAL = '1wrDddlkeG63usM_xcJgEzkh-d69rAtUcq5bsXKGmCLU'
 
 """ 
