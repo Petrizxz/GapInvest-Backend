@@ -207,7 +207,7 @@ def get_img(nome):
             if nome.lower() == arquivo["name"].removesuffix("." + extensions).lower():
                 print(arquivo["name"])
                 print(arquivo["id"])
-                return Planilha.dowload_google_drive(arquivo["id"], arquivo["name"])
+                return make_response(arquivo["id"], 200)
 
 
     return make_response(jsonify({"message": "Nome do Cliente não foi encontrado nos Upload!"}), 400)
@@ -312,4 +312,4 @@ if __name__ == '__main__':
     # Planilha.get_verifica_cliente()
     # upload_img()
 
-    # get_img("Lion")
+    #get_img("Lion")
